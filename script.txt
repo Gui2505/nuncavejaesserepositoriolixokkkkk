@@ -1,0 +1,142 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({Name = "SonmethingsHub", HidePremium = false, SaveConfig = true, ConfigFolder = "Roblox"})
+
+local UserTab = Window:MakeTab({
+	Name = "User",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+UserTab:AddToggle({
+	Name = "ESP",
+	Default = false,
+	Callback = function(Value)
+		local Players = game:GetService("Players")
+
+local function highlightPlayer(player)
+	-- Verifica se o personagem e o Humanoid estão presentes
+	if player.Character and player.Character:FindFirstChild("Humanoid") then
+		local character = player.Character
+
+		local highlight = Instance.new("Highlight")
+		highlight.Parent = character
+		highlight.Adornee = character
+		highlight.FillColor = Color3.fromRGB(255, 0, 0)
+		highlight.FillTransparency = 0.8
+		highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+		highlight.OutlineTransparency = 0.5
+		
+
+		player.CharacterAdded:Connect(function()
+			highlight.Adornee = player.Character
+		end)
+	end
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+	if player.Character then
+		highlightPlayer(player)
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		highlightPlayer(player)
+	end)
+end)
+
+	end    
+})
+Tab:AddToggle({
+	Name = "Fly+Noclip",
+	Default = false,
+	Callback = function(Value)
+		local userinput = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local cam = workspace.CurrentCamera
+
+local speed = 2 -- Velocidade padrão
+
+-- Aguarda até que o Character esteja carregado
+repeat wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+
+local humanoid = player.Character:FindFirstChild("Humanoid")
+local rootpart = player.Character:FindFirstChild("HumanoidRootPart")
+
+-- Impede o personagem de cair (mas não o deixa ancorado)
+humanoid.PlatformStand = true
+
+function getNextMovement()
+	local nextMove = Vector3.new(0, 0, 0)
+
+	if userinput:IsKeyDown(Enum.KeyCode.W) then
+		nextMove = nextMove + Vector3.new(0, 0, -1)
+	end
+	if userinput:IsKeyDown(Enum.KeyCode.S) then
+		nextMove = nextMove + Vector3.new(0, 0, 1)
+	end
+	if userinput:IsKeyDown(Enum.KeyCode.A) then
+		nextMove = nextMove + Vector3.new(-1, 0, 0)
+	end
+	if userinput:IsKeyDown(Enum.KeyCode.D) then
+		nextMove = nextMove + Vector3.new(1, 0, 0)
+	end
+	if userinput:IsKeyDown(Enum.KeyCode.Space) then
+		nextMove = nextMove + Vector3.new(0, 1, 0)
+	elseif userinput:IsKeyDown(Enum.KeyCode.LeftControl) then
+		nextMove = nextMove + Vector3.new(0, -1, 0)
+	end
+
+	return CFrame.new(nextMove * speed)
+end
+
+-- Loop contínuo para atualizar a posição
+while true do
+	wait()
+	local look = (cam.Focus.Position - cam.CFrame.Position).Unit
+	local pos = rootpart.Position
+	local nextMove = getNextMovement()
+	rootpart.CFrame = CFrame.new(pos, pos + look) * nextMove
+end
+
+	end    
+})
+Tab:AddToggle({
+	Name = "Invisibilidade",
+	Default = false,
+	Callback = function(Value)
+		local player = game:GetService("Players").LocalPlayer
+
+local function makeInvisible(character)
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.LocalTransparencyModifier = 0  -- O jogador vê normalmente
+            part.Transparency = 1  -- Invisível para os outros
+        end
+    end
+end
+
+if player.Character then
+    makeInvisible(player.Character)
+end
+
+player.CharacterAdded:Connect(makeInvisible)
+
+	end    
+})
+
+
+
+Tab:AddToggle({
+	Name = "Imortal",
+	Default = false,
+	Callback = function(Value)
+		local lplrh = game.Players.LocalPlayer.Character.Humanoid
+local truevalue = true
+while truevalue do
+	wait(0.001)
+	lplrh.Health = 9999
+end
+	end    
+})
+
